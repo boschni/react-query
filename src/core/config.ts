@@ -19,7 +19,7 @@ export const defaultQueryKeySerializerFn: QueryKeySerializerFunction = (
 ): [string, ArrayQueryKey] => {
   try {
     let arrayQueryKey: ArrayQueryKey = Array.isArray(queryKey)
-      ? queryKey
+      ? ((queryKey as unknown) as ArrayQueryKey)
       : [queryKey]
     const queryHash = stableStringify(arrayQueryKey)
     arrayQueryKey = JSON.parse(queryHash)

@@ -119,7 +119,7 @@ describe('useInfiniteQuery', () => {
         fetchMore,
         canFetchMore,
         refetch,
-      } = useInfiniteQuery<Result, Error>(
+      } = useInfiniteQuery<Result, Error, string>(
         'items',
         (_key, nextId = 0) => fetchItems(nextId, fetchCountRef.current++),
         {
@@ -214,7 +214,7 @@ describe('useInfiniteQuery', () => {
         fetchMore,
         canFetchMore,
         refetch,
-      } = useInfiniteQuery<Result, Error>(
+      } = useInfiniteQuery<Result, Error, string>(
         'items',
         (_key, nextId = 0) => fetchItems(nextId, fetchCountRef.current++),
         {
@@ -319,7 +319,7 @@ describe('useInfiniteQuery', () => {
         fetchMore,
         canFetchMore,
         refetch,
-      } = useInfiniteQuery<Result, Error>(
+      } = useInfiniteQuery<Result, Error, string>(
         'items',
         (_key, nextId = 0) => fetchItems(nextId, fetchCountRef.current++),
         {

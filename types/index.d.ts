@@ -25,25 +25,10 @@ export function useQuery<TResult, TKey extends AnyQueryKey, TError = Error>({
   config?: QueryOptions<TResult, TError>
 }): QueryResult<TResult, TError>
 
-export function useQuery<TResult, TKey extends string, TError = Error>({
-  queryKey,
-  queryFn,
-  config,
-}: {
-  queryKey: TKey
-  queryFn?: QueryFunction<TResult, [TKey]>
-  config?: QueryOptions<TResult, TError>
-}): QueryResult<TResult, TError>
-
 // Parameters Syntax
 export function useQuery<TResult, TKey extends AnyQueryKey, TError = Error>(
   queryKey: TKey | false | null | undefined,
   ...rest: UseQueryRest<TResult, TKey, TError>
-): QueryResult<TResult, TError>
-
-export function useQuery<TResult, TKey extends string, TError = Error>(
-  queryKey: TKey | false | null | undefined,
-  ...rest: UseQueryRest<TResult, [TKey], TError>
 ): QueryResult<TResult, TError>
 
 // usePaginatedQuery
@@ -627,7 +612,9 @@ export interface QueryCache {
     { exact }?: { exact?: boolean }
   ): void
   isFetching: number
-  subscribe(callback: (queryCache: QueryCache, query?: CachedQuery<unknown>) => void): () => void
+  subscribe(
+    callback: (queryCache: QueryCache, query?: CachedQuery<unknown>) => void
+  ): () => void
   clear(options?: { notify?: boolean }): void
   resetErrorBoundaries: () => void
 }

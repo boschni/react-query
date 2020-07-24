@@ -14,7 +14,7 @@ export type QueryKey =
   | { [key: number]: QueryKey }
   | readonly QueryKey[]
 
-export type ArrayQueryKey = [...QueryKey[]]
+export type ArrayQueryKey = readonly [QueryKey, ...QueryKey[]]
 
 export type QueryKeyWithoutObject =
   | string
@@ -24,8 +24,25 @@ export type QueryKeyWithoutObject =
   | undefined
   | readonly QueryKey[]
 
-export type QueryFunction<TResult> = (
-  ...args: any[]
+export type SingularQueryKey =
+  | string
+  | boolean
+  | number
+  | null
+  | undefined
+  | object
+  | { [key: string]: QueryKey }
+  | { [key: number]: QueryKey }
+
+export type SingularQueryKeyWithoutObject =
+  | string
+  | boolean
+  | number
+  | null
+  | undefined
+
+export type QueryFunction<TResult, TKey extends ArrayQueryKey> = (
+  ...args: TKey
 ) => TResult | Promise<TResult>
 
 export type InitialDataFunction<TResult> = () => TResult | undefined
@@ -61,9 +78,9 @@ export interface BaseQueryConfig<TResult, TError = unknown> {
   onSettled?: (data: TResult | undefined, error: TError | null) => void
   isDataEqual?: (oldData: unknown, newData: unknown) => boolean
   useErrorBoundary?: boolean
-  queryFn?: QueryFunction<TResult>
+  queryFn?: QueryFunction<TResult, ArrayQueryKey>
   queryKeySerializerFn?: QueryKeySerializerFunction
-  queryFnParamsFilter?: (args: any[]) => any[]
+  queryFnParamsFilter?: (args: ArrayQueryKey) => ArrayQueryKey
   suspense?: boolean
   initialData?: TResult | InitialDataFunction<TResult>
   initialStale?: boolean | InitialStaleFunction

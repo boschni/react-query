@@ -2,43 +2,81 @@ import { useBaseQuery } from './useBaseQuery'
 import { handleSuspense } from './utils'
 import {
   QueryKey,
-  QueryKeyWithoutObject,
   InfiniteQueryConfig,
   InfiniteQueryResult,
   QueryFunction,
+  SingularQueryKeyWithoutObject,
+  ArrayQueryKey,
+  SingularQueryKey,
 } from '../core/types'
 import { useQueryArgs } from './useQueryArgs'
 
 // TYPES
 
-export interface UseInfiniteQueryObjectConfig<TResult, TError> {
+export interface SingularUseInfiniteQueryObjectConfig<
+  TResult,
+  TError,
+  TKey extends SingularQueryKey
+> {
   queryKey: QueryKey
-  queryFn?: QueryFunction<TResult>
-  config: InfiniteQueryConfig<TResult, TError>
+  queryFn?: QueryFunction<TResult, [TKey]>
+  config?: InfiniteQueryConfig<TResult, TError>
+}
+
+export interface UseInfiniteQueryObjectConfig<
+  TResult,
+  TError,
+  TKey extends ArrayQueryKey
+> {
+  queryKey: QueryKey
+  queryFn?: QueryFunction<TResult, TKey>
+  config?: InfiniteQueryConfig<TResult, TError>
 }
 
 // HOOK
 
-// Parameter syntax with config
-export function useInfiniteQuery<TResult, TError = unknown>(
-  queryKey: QueryKeyWithoutObject,
-  queryConfig: InfiniteQueryConfig<TResult, TError>
+// Parameter syntax with optional config
+export function useInfiniteQuery<
+  TResult,
+  TError,
+  TKey extends SingularQueryKeyWithoutObject
+>(
+  queryKey: TKey,
+  queryConfig?: InfiniteQueryConfig<TResult, TError>
 ): InfiniteQueryResult<TResult, TError>
 
-// Parameter syntax with query function and config
-export function useInfiniteQuery<TResult, TError = unknown>(
-  queryKey: QueryKeyWithoutObject,
-  queryFn: QueryFunction<TResult>,
-  queryConfig: InfiniteQueryConfig<TResult, TError>
+// Parameter syntax with query function and optional config
+export function useInfiniteQuery<
+  TResult,
+  TError,
+  TKey extends SingularQueryKeyWithoutObject
+>(
+  queryKey: TKey,
+  queryFn: QueryFunction<TResult, [TKey]>,
+  queryConfig?: InfiniteQueryConfig<TResult, TError>
+): InfiniteQueryResult<TResult, TError>
+
+export function useInfiniteQuery<TResult, TError, TKey extends ArrayQueryKey>(
+  queryKey: TKey,
+  queryFn: QueryFunction<TResult, TKey>,
+  queryConfig?: InfiniteQueryConfig<TResult, TError>
 ): InfiniteQueryResult<TResult, TError>
 
 // Object syntax
-export function useInfiniteQuery<TResult, TError = unknown>(
-  config: UseInfiniteQueryObjectConfig<TResult, TError>
+export function useInfiniteQuery<
+  TResult,
+  TError,
+  TKey extends SingularQueryKey
+>(
+  config: SingularUseInfiniteQueryObjectConfig<TResult, TError, TKey>
+): InfiniteQueryResult<TResult, TError>
+
+export function useInfiniteQuery<TResult, TError, TKey extends ArrayQueryKey>(
+  config: UseInfiniteQueryObjectConfig<TResult, TError, TKey>
 ): InfiniteQueryResult<TResult, TError>
 
 // Implementation
-export function useInfiniteQuery<TResult, TError = unknown>(
+export function useInfiniteQuery<TResult, TError>(
   ...args: any[]
 ): InfiniteQueryResult<TResult, TError> {
   const [queryKey, config] = useQueryArgs<TResult[], TError>(args)

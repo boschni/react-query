@@ -295,8 +295,8 @@ export class Query<TResult, TError> {
 
   // Set up the core fetcher function
   private async tryFetchData(
-    fn: QueryFunction<TResult>,
-    args: any[]
+    fn: QueryFunction<TResult, ArrayQueryKey>,
+    args: ArrayQueryKey
   ): Promise<TResult> {
     try {
       // Perform the query
@@ -392,7 +392,7 @@ export class Query<TResult, TError> {
 
           if (!data.length) {
             // the first page query doesn't need to be rebuilt
-            data.push(await originalQueryFn(...args))
+            data.push(await originalQueryFn(...(args as ArrayQueryKey)))
             rebuiltPageVariables.push(args)
           } else {
             // get an up-to-date cursor based on the previous data set
@@ -415,7 +415,9 @@ export class Query<TResult, TError> {
               nextCursor,
             ]
 
-            data.push(await originalQueryFn(...pageArgs))
+            data.push(
+              await originalQueryFn(...((pageArgs as unknown) as ArrayQueryKey))
+            )
             rebuiltPageVariables.push(pageArgs)
           }
         } while (pageVariables.length)
@@ -448,7 +450,9 @@ export class Query<TResult, TError> {
               this.pageVariables = [newArgs]
             }
 
-            const newData = await originalQueryFn(...newArgs)
+            const newData = await originalQueryFn(
+              ...((newArgs as unknown) as ArrayQueryKey)
+            )
 
             let data
 

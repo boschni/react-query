@@ -25,12 +25,12 @@ describe('useQuery', () => {
       expectType<unknown>(fromQueryFn.error)
 
       // it should be possible to specify the error type
-      const withError = useQuery<string, Error>('test', () => 'test')
+      const withError = useQuery<string, Error, string>('test', () => 'test')
       expectType<string | undefined>(withError.data)
       expectType<Error | null>(withError.error)
 
       // unspecified error type should default to unknown
-      const withoutError = useQuery<number>('test', () => 1)
+      const withoutError = useQuery<number, unknown, string>('test', () => 1)
       expectType<number | undefined>(withoutError.data)
       expectType<unknown>(withoutError.error)
 
@@ -137,7 +137,7 @@ describe('useQuery', () => {
     const states: QueryResult<undefined, string>[] = []
 
     function Page() {
-      const state = useQuery<undefined, string>(
+      const state = useQuery<undefined, string, number>(
         queryKey,
         () => Promise.reject('rejected'),
         {
@@ -333,7 +333,7 @@ describe('useQuery', () => {
     consoleMock.mockImplementation(() => undefined)
 
     function Page() {
-      const { status, error } = useQuery<undefined, string>(
+      const { status, error } = useQuery<undefined, string, string>(
         'test',
         () => {
           return Promise.reject('Error test jaylen')
@@ -407,14 +407,14 @@ describe('useQuery', () => {
     })
 
     function Page() {
-      const { status, failureCount, error } = useQuery<undefined, string>(
-        'test',
-        queryFn,
-        {
-          retryDelay: 1,
-          retry: (_failureCount, error) => error !== 'NoRetry',
-        }
-      )
+      const { status, failureCount, error } = useQuery<
+        undefined,
+        string,
+        string
+      >('test', queryFn, {
+        retryDelay: 1,
+        retry: (_failureCount, error) => error !== 'NoRetry',
+      })
 
       return (
         <div>
@@ -928,7 +928,7 @@ describe('useQuery', () => {
 
   it('should accept null as query key', async () => {
     function Page() {
-      const result = useQuery(null, (key: null) => key)
+      const result = useQuery(null, key => key)
       return <>{JSON.stringify(result.data)}</>
     }
 

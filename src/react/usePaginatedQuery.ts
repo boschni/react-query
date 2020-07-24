@@ -5,11 +5,13 @@ import { handleSuspense } from './utils'
 import { getStatusBools } from '../core/utils'
 import {
   QueryKey,
-  QueryKeyWithoutObject,
   PaginatedQueryResult,
   PaginatedQueryConfig,
   QueryFunction,
   QueryStatus,
+  SingularQueryKeyWithoutObject,
+  ArrayQueryKey,
+  SingularQueryKey,
 } from '../core/types'
 import { useQueryArgs } from './useQueryArgs'
 
@@ -20,34 +22,70 @@ import { useQueryArgs } from './useQueryArgs'
 
 // TYPES
 
-export interface UsePaginatedQueryObjectConfig<TResult, TError> {
+export interface SingularUsePaginatedQueryObjectConfig<
+  TResult,
+  TError,
+  TKey extends SingularQueryKey
+> {
   queryKey: QueryKey
-  queryFn?: QueryFunction<TResult>
+  queryFn?: QueryFunction<TResult, [TKey]>
+  config?: PaginatedQueryConfig<TResult, TError>
+}
+
+export interface UsePaginatedQueryObjectConfig<
+  TResult,
+  TError,
+  TKey extends ArrayQueryKey
+> {
+  queryKey: QueryKey
+  queryFn?: QueryFunction<TResult, TKey>
   config?: PaginatedQueryConfig<TResult, TError>
 }
 
 // HOOK
 
 // Parameter syntax with optional config
-export function usePaginatedQuery<TResult, TError = unknown>(
-  queryKey: QueryKeyWithoutObject,
+export function usePaginatedQuery<
+  TResult,
+  TError,
+  TKey extends SingularQueryKeyWithoutObject
+>(
+  queryKey: TKey,
   queryConfig?: PaginatedQueryConfig<TResult, TError>
 ): PaginatedQueryResult<TResult, TError>
 
 // Parameter syntax with query function and optional config
-export function usePaginatedQuery<TResult, TError = unknown>(
-  queryKey: QueryKeyWithoutObject,
-  queryFn: QueryFunction<TResult>,
+export function usePaginatedQuery<
+  TResult,
+  TError,
+  TKey extends SingularQueryKeyWithoutObject
+>(
+  queryKey: TKey,
+  queryFn: QueryFunction<TResult, [TKey]>,
+  queryConfig?: PaginatedQueryConfig<TResult, TError>
+): PaginatedQueryResult<TResult, TError>
+
+export function usePaginatedQuery<TResult, TError, TKey extends ArrayQueryKey>(
+  queryKey: TKey,
+  queryFn: QueryFunction<TResult, TKey>,
   queryConfig?: PaginatedQueryConfig<TResult, TError>
 ): PaginatedQueryResult<TResult, TError>
 
 // Object syntax
-export function usePaginatedQuery<TResult, TError = unknown>(
-  config: UsePaginatedQueryObjectConfig<TResult, TError>
+export function usePaginatedQuery<
+  TResult,
+  TError,
+  TKey extends SingularQueryKey
+>(
+  config: SingularUsePaginatedQueryObjectConfig<TResult, TError, TKey>
+): PaginatedQueryResult<TResult, TError>
+
+export function usePaginatedQuery<TResult, TError, TKey extends ArrayQueryKey>(
+  config: UsePaginatedQueryObjectConfig<TResult, TError, TKey>
 ): PaginatedQueryResult<TResult, TError>
 
 // Implementation
-export function usePaginatedQuery<TResult, TError = unknown>(
+export function usePaginatedQuery<TResult, TError>(
   ...args: any[]
 ): PaginatedQueryResult<TResult, TError> {
   const [queryKey, config = {}] = useQueryArgs<TResult, TError>(args)
